@@ -10,6 +10,9 @@ module Anemone
     # CookieStore for this HTTP client
     attr_reader :cookie_store
 
+    # To check time elapsed and refresh connections
+    attr_accessor :timecop
+
     def initialize(opts = {})
       @connections = {}
       @opts = opts
@@ -78,7 +81,10 @@ module Anemone
     # The proxy address string
     #
     def proxy_host
-      @opts[:proxy_host]
+      list = Array.wrap(@opts[:proxy_host])
+      proxy = list[rand(list.length)]
+      puts "Proxy: #{proxy}" if verbose?
+      proxy
     end
 
     #
@@ -150,6 +156,12 @@ module Anemone
     end
 
     def connection(url)
+      if timecop.nil? || Time.now - timecop > 30.seconds
+        puts "Clearing connections..." if verbose?
+        @connections = {}
+        self.timecop = Time.now
+      end
+
       @connections[url.host] ||= {}
 
       if conn = @connections[url.host][url.port]
@@ -169,7 +181,7 @@ module Anemone
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
 
-      @connections[url.host][url.port] = http.start 
+      @connections[url.host][url.port] = http.start
     end
 
     def verbose?
