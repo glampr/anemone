@@ -32,7 +32,11 @@ module Anemone
     private
 
     def delay
-      sleep @opts[:delay] if @opts[:delay] > 0
+      delay_sec = @opts[:delay]
+      if @opts[:delay].respond_to?(:call)
+        delay_sec = @opts[:delay].call
+      end
+      sleep delay_sec if delay_sec.to_f > 0.0
     end
 
   end
