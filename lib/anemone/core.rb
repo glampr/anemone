@@ -51,9 +51,7 @@ module Anemone
       # skip any link with a query string? e.g. http://foo.com/?u=user
       :skip_query_strings => false,
       # proxy server hostname
-      :proxy_host => nil,
-      # proxy server port number
-      :proxy_port => false,
+      :proxies => nil,
       # HTTP read timeout in seconds
       :read_timeout => nil
     }
