@@ -46,7 +46,7 @@ module Anemone
         end
 
         return pages
-      rescue Exception => e
+      rescue StandardError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, OpenSSL::SSL::SSLError, SocketError, EOFError => e
         if verbose?
           puts e.inspect
           puts e.backtrace
@@ -146,7 +146,7 @@ module Anemone
         response_time = ((finish - start) * 1000).round
         @cookie_store.merge!(response['Set-Cookie']) if accept_cookies?
         return response, response_time
-      rescue Timeout::Error, Net::HTTPBadResponse, EOFError => e
+      rescue Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, OpenSSL::SSL::SSLError, SocketError, EOFError => e
         puts e.inspect if verbose?
         refresh_connection(url)
         retries += 1
@@ -155,7 +155,7 @@ module Anemone
     end
 
     def connection(url)
-      if timecop.nil? || Time.now - timecop > 30.seconds
+      if timecop.nil? || Time.now - timecop > 15.seconds
         puts "Clearing connections..." if verbose?
         @connections = {}
         self.timecop = Time.now
