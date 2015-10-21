@@ -145,8 +145,12 @@ module Anemone
         finish = Time.now()
         response_time = ((finish - start) * 1000).round
         @cookie_store.merge!(response['Set-Cookie']) if accept_cookies?
+        code = Integer(response.code)
+        if !code.between?(200, 299)
+          raise "Bad status code (#{code}) for : #{url.to_s}... Retry ##{retries}..."
+        end
         return response, response_time
-      rescue TypeError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, OpenSSL::SSL::SSLError, SocketError, EOFError => e
+      rescue StandardError, RuntimeError, TypeError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, OpenSSL::SSL::SSLError, SocketError, EOFError => e
         puts e.inspect if verbose?
         refresh_connection(url)
         retries += 1
