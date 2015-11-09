@@ -150,7 +150,7 @@ module Anemone
           raise "Bad status code (#{code}) for : #{url.to_s}... Retry ##{retries}..."
         end
         return response, response_time
-      rescue StandardError, RuntimeError, TypeError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, OpenSSL::SSL::SSLError, SocketError, EOFError => e
+      rescue StandardError, RuntimeError, TypeError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, Net::ReadTimeout, OpenSSL::SSL::SSLError, SocketError, EOFError => e
         puts e.inspect if verbose?
         refresh_connection(url)
         retries += 1
