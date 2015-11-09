@@ -154,7 +154,7 @@ module Anemone
         puts e.inspect if verbose?
         refresh_connection(url)
         retries += 1
-        retry unless retries > 3
+        retry unless retries > 5
       end
     end
 
