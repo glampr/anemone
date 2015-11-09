@@ -142,6 +142,7 @@ module Anemone
         # HTTP Basic authentication
         req.basic_auth url.user, url.password if url.user
         response = connection(url).request(req)
+        raise "Response is nil!" if response.nil?
         finish = Time.now()
         response_time = ((finish - start) * 1000).round
         @cookie_store.merge!(response['Set-Cookie']) if accept_cookies?
