@@ -151,7 +151,10 @@ module Anemone
         end
         return response, response_time
       rescue StandardError, RuntimeError, TypeError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, Net::ReadTimeout, OpenSSL::SSL::SSLError, SocketError, EOFError => e
-        puts e.inspect if verbose?
+        if verbose?
+          puts "While trying to fetch page... "
+          puts e.inspect
+        end
         refresh_connection(url)
         retries += 1
         retry unless retries > 5
@@ -186,7 +189,18 @@ module Anemone
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
 
-      @connections[url.host][url.port] = http.start
+      retries = 0
+      begin
+        @connections[url.host][url.port] = http.start
+      rescue StandardError, RuntimeError, TypeError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, Net::ReadTimeout, OpenSSL::SSL::SSLError, SocketError, EOFError => e
+        if verbose?
+          puts "While refreshing connection... "
+          puts e.inspect
+        end
+        refresh_connection(url)
+        retries += 1
+        retry unless retries > 5
+      end
     end
 
     def verbose?
