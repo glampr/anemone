@@ -175,7 +175,8 @@ module Anemone
     end
 
     def refresh_connection(url)
-      proxy_host, proxy_port = proxy_info.nil? ? [nil, nil] : proxy_info.split(":")
+      proxy = proxy_info
+      proxy_host, proxy_port = proxy.nil? ? [nil, nil] : proxy.split(":")
       http = Net::HTTP.new(url.host, url.port, proxy_host, proxy_port)
 
       http.read_timeout = read_timeout if !!read_timeout
