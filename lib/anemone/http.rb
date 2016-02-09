@@ -195,7 +195,7 @@ module Anemone
         @connections[url.host][url.port] = http.start
       rescue StandardError, RuntimeError, TypeError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::ENETUNREACH, Net::HTTPBadResponse, Net::HTTPRetriableError, Net::HTTPServerException, Net::HTTPFatalError, Net::ReadTimeout, OpenSSL::SSL::SSLError, SocketError, EOFError => e
         if verbose?
-          puts "While refreshing connection... "
+          puts "While refreshing connection... (url: #{url})"
           puts e.inspect
         end
         refresh_connection(url)
